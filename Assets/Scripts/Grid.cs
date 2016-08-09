@@ -88,7 +88,7 @@ public class Grid : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-
+        
         if (grid != null && displayGridGizmos)
         {
             foreach (Node n in grid)
@@ -97,5 +97,11 @@ public class Grid : MonoBehaviour
                 Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
         }
+    }
+
+
+    public Vector3 SnapToGrid(Vector3 mousePos)
+    {
+        return NodeFromWorldPoint(mousePos).worldPosition;
     }
 }
