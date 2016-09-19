@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class InitLevel : MonoBehaviour {
+public class InitLevel : MonoBehaviour
+{
 
     public Texture2D levelMap;
 
@@ -23,7 +24,7 @@ public class InitLevel : MonoBehaviour {
             {
                 if (allPixels[x + (y * width)].Equals(new Color32(0, 0, 0, 255)))
                 {
-                    grid[width - 1 - x, height -1 - y].walkable = false;
+                    grid[width - 1 - x, height - 1 - y].walkable = false;
                 }
             }
         }

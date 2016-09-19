@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
 
 public class Grid : MonoBehaviour
 {
-
     public bool displayGridGizmos;
     public LayerMask unwalkableMask;
     public Vector2 gridWorldSize;
@@ -20,7 +19,10 @@ public class Grid : MonoBehaviour
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         CreateGrid();
-        this.GetComponent<InitLevel>().LoadMap(grid);
+        if (this.GetComponent<InitLevel>())
+        {
+            this.GetComponent<InitLevel>().LoadMap(grid);
+        }
     }
 
     public int MaxSize
@@ -31,7 +33,7 @@ public class Grid : MonoBehaviour
         }
     }
 
-    void CreateGrid()
+    public void CreateGrid()
     {
         grid = new Node[gridSizeX, gridSizeY];
         Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
@@ -71,7 +73,6 @@ public class Grid : MonoBehaviour
         return neighbours;
     }
 
-
     public Node NodeFromWorldPoint(Vector3 worldPosition)
     {
         float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
@@ -89,7 +90,7 @@ public class Grid : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-        
+
         if (grid != null && displayGridGizmos)
         {
             foreach (Node n in grid)
@@ -100,9 +101,21 @@ public class Grid : MonoBehaviour
         }
     }
 
-
     public Vector3 SnapToGrid(Vector3 mousePos)
     {
         return NodeFromWorldPoint(mousePos).worldPosition;
+    }
+
+    public Vector3 SnapToIntersection(Vector3 mousePos)
+    {
+        float percentX = (mousePos.x + gridWorldSize.x / 2) / gridWorldSize.x;
+        float percentY = (mousePos.z + gridWorldSize.y / 2) / gridWorldSize.y;
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
+
+        Vector3 floor_pos = grid[Mathf.FloorToInt((gridSizeX - 1) * percentX), Mathf.FloorToInt((gridSizeY - 1) * percentY)].worldPosition;
+        Vector3 ceil_pos = grid[Mathf.CeilToInt((gridSizeX - 1) * percentX), Mathf.CeilToInt((gridSizeY - 1) * percentY)].worldPosition;
+        
+        return new Vector3((floor_pos.x + ceil_pos.x) / 2, (floor_pos.y + ceil_pos.y) / 2, (floor_pos.z + ceil_pos.z) / 2);        
     }
 }
