@@ -67,18 +67,22 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    public void damageTaken(float damage)
+    public bool ApplyDamage(float damage)
     {
         health -= damage;
 
+        //TODO: This should propably handled smarter
         if(health <= 0)
         {
             Death();
+            return true;
         }
+        return false;
     }
 
     void Death()
     {
         Debug.Log(this.name + " died");
+        Destroy(gameObject);
     }
 }

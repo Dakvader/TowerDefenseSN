@@ -4,27 +4,38 @@ using System.Collections.Generic;
 
 public class Tower : MonoBehaviour {
 
-    public float range;
     public float health;
-    public float damage = 20;
+    public float maxDamage = 40;
+    public float minDamage = 20;
+
+    //This approach should be good for a wide range of values
+    public float attackDelay = 100f;
+    public float attackSpeed = 100f;
+
+    float nextDamageEvent = 0f;
 
     List<GameObject> nearbyEnemies = new List<GameObject>();
 
     void Update()
     {
+        
         if (nearbyEnemies.Count != 0)
         {
-            int index = Random.Range(0, nearbyEnemies.Count);
-            GameObject enemy = nearbyEnemies[index];
-            enemy.GetComponent<Enemy>().damageTaken(damage);
+            if (Time.time >= nextDamageEvent)
+            {
+                nextDamageEvent = Time.time + (attackDelay / attackSpeed);
 
-            Debug.Log("Enemy " + enemy.name + " hit. Health remaining :" + enemy.GetComponent<Enemy>().health);
+                int index = Random.Range(0, nearbyEnemies.Count);
+                GameObject enemy = nearbyEnemies[index];
+                if(enemy == null || enemy.GetComponent<Enemy>().ApplyDamage(Random.Range(minDamage, maxDamage)))
+                {
+                    nearbyEnemies.Remove(enemy);
+                    Debug.Log("Enemies nearby for " + this.name + ": " + nearbyEnemies.Count);
+                }
+
+                Debug.Log("Enemy " + enemy.name + " hit by " + this.name +  ". Health remaining :" + enemy.GetComponent<Enemy>().health);
+            }
         }
-    }
-
-    List<Enemy> checkForEnemies ()
-    {
-        return null;
     }
 
     void OnTriggerEnter(Collider other)
@@ -32,7 +43,7 @@ public class Tower : MonoBehaviour {
         if (other.gameObject.tag == "Enemy")
         {
             nearbyEnemies.Add(other.gameObject);
-            Debug.Log(nearbyEnemies.Count);
+            Debug.Log("Enemies nearby for " + this.name + ": " + nearbyEnemies.Count);
         }
     }
 
@@ -41,7 +52,7 @@ public class Tower : MonoBehaviour {
         if (other.gameObject.tag == "Enemy")
         {
             nearbyEnemies.Remove(other.gameObject);
-            Debug.Log(nearbyEnemies.Count);
+            Debug.Log("Enemies nearby for " + this.name + ": " + nearbyEnemies.Count);
         }
     }
 }
