@@ -33,7 +33,10 @@ public class Tower : MonoBehaviour {
                     Debug.Log("Enemies nearby for " + this.name + ": " + nearbyEnemies.Count);
                 }
 
-                Debug.Log("Enemy " + enemy.name + " hit by " + this.name +  ". Health remaining :" + enemy.GetComponent<Enemy>().health);
+                if (enemy != null)
+                {
+                    Debug.Log("Enemy " + enemy.name + " hit by " + this.name +  ". Health remaining :" + enemy.GetComponent<Enemy>().health);
+                }
             }
         }
     }
